@@ -3,6 +3,7 @@ package com.duchuy.profileservice.service;
 
 import com.duchuy.profileservice.model.ProfileDTO;
 import com.duchuy.profileservice.repository.ProfileRepository;
+import com.duchuy.profileservice.utils.Constant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,5 +27,24 @@ public class ProfileService {
                 .flatMap(profile -> Mono.just(true)) //Mono<true>
                 .switchIfEmpty(Mono.just(false));
     }
-
+    public Mono<ProfileDTO> createNewProfile(ProfileDTO profileDTO){
+        return checkDuplicate(profileDTO.getEmail())
+                .flatMap(aBoolean -> {
+                    if(Boolean.TRUE.equals(aBoolean)){
+                        return Mono.error(new Exception("Duplicate profile"));
+                    }else{
+                        profileDTO.setStatus(Constant.STATUS_PROFILE_PENDING);
+                        return createProfile(profileDTO);
+                    }
+                });
+    }
+    public Mono<ProfileDTO> createProfile(ProfileDTO profileDTO){
+        return Mono.just(profileDTO)
+                .map(ProfileDTO::dtoToEntity)
+                .flatMap(profile -> profileRepository.save(profile))
+                .map(ProfileDTO::entityToDto)
+                .doOnError(throwable -> log.error(throwable.getMessage()))
+                .doOnSuccess(profileDTO1 -> {
+                });
+    }
 }
