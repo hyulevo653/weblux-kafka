@@ -17,7 +17,14 @@ public class ProfileService {
 
     public Flux<ProfileDTO> getAllProfile(){
         return profileRepository.findAll() // trả về 1 flux<Profile>
-                                    .map(profile -> ProfileDTO.entityToDto(profile))
+                                    .map(ProfileDTO::entityToDto)
                 .switchIfEmpty(Mono.error(new Exception("Profile list empty!")));
     }
+
+    public Mono<Boolean> checkDuplicate(String email){
+        return profileRepository.findByEmail(email)
+                .flatMap(profile -> Mono.just(true)) //Mono<true>
+                .switchIfEmpty(Mono.just(false));
+    }
+
 }
