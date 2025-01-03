@@ -1,11 +1,12 @@
 package com.duchuy.profileservice.service;
 
-
+import com.duchuy.commonservice.common.CommonException;
 import com.duchuy.profileservice.model.ProfileDTO;
 import com.duchuy.profileservice.repository.ProfileRepository;
 import com.duchuy.profileservice.utils.Constant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -21,7 +22,6 @@ public class ProfileService {
                                     .map(ProfileDTO::entityToDto)
                 .switchIfEmpty(Mono.error(new Exception("Profile list empty!")));
     }
-
     public Mono<Boolean> checkDuplicate(String email){
         return profileRepository.findByEmail(email)
                 .flatMap(profile -> Mono.just(true)) //Mono<true>
@@ -31,7 +31,7 @@ public class ProfileService {
         return checkDuplicate(profileDTO.getEmail())
                 .flatMap(aBoolean -> {
                     if(Boolean.TRUE.equals(aBoolean)){
-                        return Mono.error(new Exception("Duplicate profile"));
+                        return Mono.error(new CommonException("PF02","Duplicate profile !", HttpStatus.BAD_REQUEST));
                     }else{
                         profileDTO.setStatus(Constant.STATUS_PROFILE_PENDING);
                         return createProfile(profileDTO);
