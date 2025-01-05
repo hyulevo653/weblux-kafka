@@ -1,0 +1,2 @@
+kafka-topics.bat --create --topic tanthanh --bootstrap-server localhost:9092
+kafka-topics.bat --list --bootstrap-server localhost:9092
