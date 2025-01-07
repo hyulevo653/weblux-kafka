@@ -7,7 +7,7 @@ import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 
 @SpringBootApplication
 @EnableR2dbcRepositories
-@ComponentScan({"com.duchuy.accountservice", "com.duchuy.commonservice"})
+//@ComponentScan({"com.duchuy.accountservice", "com.duchuy.commonservice"})
 public class AccountserviceApplication {
 
 	public static void main(String[] args) {
