@@ -3,7 +3,7 @@ package com.duchuy.accountservice.event;
 import com.duchuy.accountservice.model.AccountDTO;
 import com.duchuy.accountservice.service.AccountService;
 import com.duchuy.commonservice.utils.Constant;
-import com.duchuy.profileservice.model.ProfileDTO;
+import com.duchuy.commonservice.model.ProfileDTO;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +23,14 @@ public class EventConsumer {
 
     @Autowired
     EventProducer eventProducer;
+
     public EventConsumer(ReceiverOptions<String,String> receiverOptions){
         KafkaReceiver.create(receiverOptions.subscription(Collections.singleton(Constant.PROFILE_ONBOARDING_TOPIC)))
                 .receive().subscribe(this::profileOnboarding);
     }
     public void profileOnboarding(ReceiverRecord<String,String> receiverRecord){
         log.info("Profile Onboarding event");
-        ProfileDTO dto = gson.fromJson(receiverRecord.value(),ProfileDTO.class);
+        ProfileDTO dto = gson.fromJson(receiverRecord.value(), ProfileDTO.class);
         AccountDTO accountDTO = new AccountDTO();
         accountDTO.setEmail(dto.getEmail());
         accountDTO.setReserved(0);

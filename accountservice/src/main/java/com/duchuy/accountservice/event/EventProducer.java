@@ -7,11 +7,13 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.kafka.sender.KafkaSender;
 import reactor.kafka.sender.SenderRecord;
+
 @Service
 @Slf4j
 public class EventProducer {
     @Autowired
     private KafkaSender<String, String> sender;
+
     public Mono<String> send(String topic, String message){
         return sender
                 .send(Mono.just(SenderRecord.create(new ProducerRecord<>(topic,message),message)))
