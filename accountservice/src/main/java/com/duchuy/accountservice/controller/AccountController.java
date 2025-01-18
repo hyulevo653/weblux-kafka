@@ -3,6 +3,8 @@ package com.duchuy.accountservice.controller;
 
 import com.duchuy.accountservice.model.AccountDTO;
 import com.duchuy.accountservice.service.AccountService;
+import com.duchuy.accountservice.service.UserService;
+import io.swagger.v3.oas.annotations.headers.Header;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +21,18 @@ public class AccountController {
     @Autowired
     AccountService accountService;
 
+    @Autowired
+    UserService userService;
+
     @GetMapping
     public Flux<AccountDTO> getAllAccounts() {
         return accountService.getAllAccounts();
     }
 
+    @GetMapping("/{id}")
+    public Mono<AccountDTO> getAccountById(@PathVariable String id, @RequestHeader(name = "token", defaultValue = "") String token) {
+        return userService.validateToken(token).then(accountService.getAccountById(id));
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -51,6 +60,7 @@ public class AccountController {
                 .then(Mono.just(ResponseEntity.ok().body(createResponse(200, "Xóa thành công"))))
                 .defaultIfEmpty(ResponseEntity.status(HttpStatus.NOT_FOUND).body(createResponse(404, "Tài khoản không tồn tại")));
     }
+
     private Map<String, Object> createResponse(int status, String message) {
         Map<String, Object> response = new HashMap<>();
         response.put("status", status);
