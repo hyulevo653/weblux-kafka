@@ -5,8 +5,6 @@ import com.duchuy.accountservice.model.AccountDTO;
 import com.duchuy.accountservice.repository.AccountRepository;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
-import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;

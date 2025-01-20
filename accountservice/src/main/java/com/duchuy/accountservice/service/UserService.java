@@ -5,12 +5,17 @@ import com.duchuy.accountservice.model.LoginDTO;
 import com.duchuy.accountservice.model.LoginResponse;
 import com.duchuy.accountservice.model.UserDto;
 import com.duchuy.accountservice.repository.UserRepository;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
 import jakarta.servlet.ServletException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+
+import java.util.Date;
 
 @Service
 @Slf4j
@@ -61,10 +66,30 @@ public class UserService {
     if (StringUtils.isBlank(token)) {
       return Mono.error(new Exception("Invalid token"));
     }
-    String id = tokenProvider.getIdFromJWT(token);
-    //validate thời gian hết hạn
-    //....
-    return getById(id).switchIfEmpty(Mono.error(new Exception("Invalid token")))
-        .map(UserDto::getId);
+
+    try {
+      // Sử dụng JwtTokenProvider để lấy JWT_SECRET
+      Claims claims = Jwts.parser()
+              .setSigningKey(tokenProvider.JWT_SECRET)  // Sử dụng JWT_SECRET từ tokenProvider
+              .parseClaimsJws(token)
+              .getBody();
+
+      Date expirationDate = claims.getExpiration();
+      Date now = new Date();
+
+      // Kiểm tra xem token có hết hạn chưa
+      if (expirationDate.before(now)) {
+        return Mono.error(new Exception("Token has expired"));
+      }
+
+      String id = claims.get("id").toString();
+      return getById(id).switchIfEmpty(Mono.error(new Exception("Invalid token")))
+              .map(UserDto::getId);
+
+    } catch (ExpiredJwtException ex) {
+      return Mono.error(new Exception("Token has expired"));
+    } catch (Exception ex) {
+      return Mono.error(new Exception("Invalid token"));
+    }
   }
 }

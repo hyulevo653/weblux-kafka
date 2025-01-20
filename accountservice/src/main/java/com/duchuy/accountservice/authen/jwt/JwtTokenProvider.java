@@ -12,9 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class JwtTokenProvider {
-    private final String JWT_SECRET = "lodaaaaaa";
+    public  final String JWT_SECRET = "lodaaaaaa";
 
-    private final long JWT_EXPIRATION = 604800000L;
+    private final long JWT_EXPIRATION = 600000L;
 
     public String generateToken(String id, String username) {
         Date now = new Date();

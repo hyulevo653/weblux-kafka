@@ -4,7 +4,6 @@ package com.duchuy.accountservice.controller;
 import com.duchuy.accountservice.model.AccountDTO;
 import com.duchuy.accountservice.service.AccountService;
 import com.duchuy.accountservice.service.UserService;
-import io.swagger.v3.oas.annotations.headers.Header;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
